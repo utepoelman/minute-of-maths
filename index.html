@@ -142,6 +142,16 @@
   ol.guide-steps li { margin-bottom: 8px; }
 
   .radio-option { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; cursor: pointer; font-size: 14px; font-weight: normal; }
+
+  #btn-quick-restart {
+    background-color: #dc3545;
+    color: white;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  #btn-quick-restart:hover { background-color: #bb2d3b; }
 </style>
 </head>
 <body>
@@ -369,6 +379,7 @@
 <div id="game-container" class="hidden">
   <div id="live-stats">
     <span id="live-timer-display">Time: 60s</span>
+    <button id="btn-quick-restart" class="hidden">↺ Restart Run</button>
     <span id="live-score-display">Score: 0 (100%)</span>
   </div>
 
@@ -578,6 +589,7 @@ const radioSheetNew = document.getElementById('radio-sheet-new');
 const radioSheetExisting = document.getElementById('radio-sheet-existing');
 const existingSheetContainer = document.getElementById('existing-sheet-container');
 const existingSheetInput = document.getElementById('existing-sheet-input');
+const btnQuickRestart = document.getElementById('btn-quick-restart');
 
 if (localStorage.getItem('nugget_script_url')) {
   scriptUrlInput.value = localStorage.getItem('nugget_script_url');
@@ -622,6 +634,7 @@ document.getElementById('btn-copy-apps-script').addEventListener('click', (e) =>
 
 document.querySelectorAll('.btn-go-welcome').forEach(btn => {
   btn.addEventListener('click', () => {
+    clearInterval(timerInterval);
     hostPanel.classList.add('hidden');
     playerPanel.classList.add('hidden');
     soloPanel.classList.add('hidden');
@@ -812,11 +825,23 @@ document.getElementById('btn-player-start').addEventListener('click', () => {
   prepareReadyState();
 });
 
+btnQuickRestart.addEventListener('click', (e) => {
+  e.stopPropagation();
+  clearInterval(timerInterval);
+  prepareReadyState();
+});
+
 function prepareReadyState() {
   playerPanel.classList.add('hidden');
   soloPanel.classList.add('hidden');
   statsPanel.classList.add('hidden');
   gameContainer.classList.remove('hidden');
+
+  if (isSoloMode) {
+    btnQuickRestart.classList.remove('hidden');
+  } else {
+    btnQuickRestart.classList.add('hidden');
+  }
 
   startPrompt.classList.remove('hidden');
   problemDisplay.classList.add('hidden');
