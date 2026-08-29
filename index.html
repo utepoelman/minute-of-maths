@@ -246,6 +246,13 @@
     <small style="opacity: 0.7; margin-top: 4px;">Enter once. Automatically saved for future sessions.</small>
   </div>
 
+  <!-- Session Tag / Group Input -->
+  <div class="form-group">
+    <label for="host-session-tag">Session Tag / Group Label:</label>
+    <input type="text" id="host-session-tag" placeholder="e.g. Class 3A, Period 1, Run 2">
+    <small style="opacity: 0.7; margin-top: 4px;">Recorded in spreadsheet to help filter/sort results easily.</small>
+  </div>
+
   <div class="form-group">
     <label>Google Sheet Destination:</label>
     <label class="radio-option">
@@ -469,6 +476,7 @@ const APPS_SCRIPT_SOURCE = `function doGet(e) {
       sheet.appendRow([
         new Date(),
         rawData.studentName || "Anonymous",
+        rawData.sessionTag || "General",
         rawData.activityCode || "",
         "'" + (rawData.operations || ""),
         rawData.maxInput || "",
@@ -494,9 +502,9 @@ const APPS_SCRIPT_SOURCE = `function doGet(e) {
 
 function setupHeaders(sheet) {
   const headers = [
-    "Timestamp", "Student Name", "Activity Code", "Operations", 
-    "Max Input", "Missing Symbol", "Direction Mode", "Theme", 
-    "Button Theme", "Show Nugget", "Correct Answers", 
+    "Timestamp", "Student Name", "Session Tag / Group", "Activity Code", 
+    "Operations", "Max Input", "Missing Symbol", "Direction Mode", 
+    "Theme", "Button Theme", "Show Nugget", "Correct Answers", 
     "Total Attempts", "Accuracy (%)", "Avg Sec/Correct"
   ];
   sheet.appendRow(headers);
@@ -645,6 +653,7 @@ document.getElementById('btn-solo-start').addEventListener('click', () => {
 
   config = {
     seed: Math.random().toString(36).substring(2, 9),
+    sessionTag: "Solo Practice",
     ops: ops,
     maxInput: parseInt(document.getElementById('solo-max-input').value, 10),
     missingSymbol: document.getElementById('solo-missing-symbol').value,
@@ -720,8 +729,11 @@ document.getElementById('btn-generate-code').addEventListener('click', async () 
     const usedSheet = useExisting ? existingInput : backendData.sheetId;
     localStorage.setItem('nugget_last_sheet_id', usedSheet);
 
+    const tagInput = document.getElementById('host-session-tag').value.trim();
+
     const activityConfig = {
       seed: Math.random().toString(36).substring(2, 9),
+      sessionTag: tagInput !== "" ? tagInput : "General",
       ops: ops,
       maxInput: parseInt(document.getElementById('max-input').value, 10),
       missingSymbol: document.getElementById('missing-symbol').value,
@@ -951,6 +963,7 @@ function endGame() {
 function submitResultsToSpreadsheet(accuracy, avgTime) {
   const payload = {
     studentName: playerName,
+    sessionTag: config.sessionTag || "General",
     activityCode: currentSeed,
     operations: config.ops.join(" "),
     maxInput: config.maxInput,
