@@ -246,7 +246,6 @@
     <small style="opacity: 0.7; margin-top: 4px;">Enter once. Automatically saved for future sessions.</small>
   </div>
 
-  <!-- Session Tag / Group Input -->
   <div class="form-group">
     <label for="host-session-tag">Session Tag / Group Label:</label>
     <input type="text" id="host-session-tag" placeholder="e.g. Class 3A, Period 1, Run 2">
@@ -396,7 +395,15 @@
 </div>
 
 <div id="stats-panel" class="hidden">
-  <h2 style="text-align: center;">Time's Up!</h2>
+  <h2 style="text-align: center; margin-bottom: 15px;">Time's Up!</h2>
+
+  <!-- Maths Settings Summary Box -->
+  <div id="game-settings-summary" style="background-color: var(--card-bg); padding: 12px 15px; border-radius: 6px; margin-bottom: 15px; font-size: 13px; line-height: 1.6; text-align: center;">
+    <div><b>Operations:</b> <span id="summary-ops">-</span></div>
+    <div><b>Max Input:</b> <span id="summary-max">-</span></div>
+    <div><b>Format:</b> <span id="summary-format">-</span></div>
+  </div>
+
   <div class="stat-grid">
     <div class="stat-card">
       <div class="value" id="stat-score">0</div>
@@ -573,7 +580,6 @@ const radioSheetExisting = document.getElementById('radio-sheet-existing');
 const existingSheetContainer = document.getElementById('existing-sheet-container');
 const existingSheetInput = document.getElementById('existing-sheet-input');
 
-// Restore saved settings on load
 if (localStorage.getItem('nugget_script_url')) {
   scriptUrlInput.value = localStorage.getItem('nugget_script_url');
 }
@@ -918,7 +924,6 @@ optionButtons.forEach(btn => {
     e.stopPropagation();
     if (!isGameActive) return;
 
-    // Immediately remove focus highlight from clicked button
     e.currentTarget.blur();
 
     totalAttempts++;
@@ -951,6 +956,15 @@ function endGame() {
   document.getElementById('stat-attempts').textContent = totalAttempts;
   document.getElementById('stat-accuracy').textContent = `${accuracy}%`;
   document.getElementById('stat-avg-time').textContent = `${avgTime}s`;
+
+  // Display configuration details on score screen
+  document.getElementById('summary-ops').textContent = config.ops ? config.ops.join(' ') : 'None';
+  document.getElementById('summary-max').textContent = config.maxInput || '-';
+  
+  let formatText = 'Forward Only';
+  if (config.direction === 'backward') formatText = 'Backward Only';
+  if (config.direction === 'mixed') formatText = 'Mixed (Forward & Backward)';
+  document.getElementById('summary-format').textContent = formatText;
 
   gameContainer.classList.add('hidden');
   statsPanel.classList.remove('hidden');
@@ -988,7 +1002,6 @@ document.getElementById('btn-restart').addEventListener('click', (e) => {
   prepareReadyState();
 });
 
-// Auto-detect join link parameter on load
 window.addEventListener('load', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const codeParam = urlParams.get('code');
