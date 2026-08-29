@@ -105,8 +105,19 @@
   @keyframes pulse { 0% { opacity: 0.6; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } 100% { opacity: 0.6; transform: scale(0.98); } }
 
   #options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
-  .btn-choice { background-color: var(--primary-btn); color: white; font-size: 28px; padding: 18px; border-radius: 8px; border: none; box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+  .btn-choice {
+    background-color: var(--primary-btn);
+    color: white;
+    font-size: 28px;
+    padding: 18px;
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
   .btn-choice:hover { background-color: var(--primary-btn-hover); transform: translateY(-2px); }
+  .btn-choice:focus, .btn-choice:active { outline: none; }
 
   #nugget-container { display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%; height: 120px; }
   .nugget-wrapper { width: 100px; height: 100px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
@@ -888,6 +899,9 @@ optionButtons.forEach(btn => {
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
     if (!isGameActive) return;
+
+    // Immediately remove focus highlight from clicked button
+    e.currentTarget.blur();
 
     totalAttempts++;
     if (parseInt(e.target.textContent, 10) === currentProblem.answer) {
