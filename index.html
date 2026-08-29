@@ -397,7 +397,6 @@
 <div id="stats-panel" class="hidden">
   <h2 style="text-align: center; margin-bottom: 15px;">Time's Up!</h2>
 
-  <!-- Maths Settings Summary Box -->
   <div id="game-settings-summary" style="background-color: var(--card-bg); padding: 12px 15px; border-radius: 6px; margin-bottom: 15px; font-size: 13px; line-height: 1.6; text-align: center;">
     <div><b>Operations:</b> <span id="summary-ops">-</span></div>
     <div><b>Max Input:</b> <span id="summary-max">-</span></div>
@@ -657,18 +656,35 @@ document.getElementById('btn-solo-start').addEventListener('click', () => {
   isSoloMode = true;
   playerName = "Solo Player";
 
-  config = {
-    seed: Math.random().toString(36).substring(2, 9),
-    sessionTag: "Solo Practice",
-    ops: ops,
-    maxInput: parseInt(document.getElementById('solo-max-input').value, 10),
+  const soloSettings = {
+    add: document.getElementById('solo-op-add').checked,
+    sub: document.getElementById('solo-op-sub').checked,
+    mul: document.getElementById('solo-op-mul').checked,
+    div: document.getElementById('solo-op-div').checked,
+    maxInput: document.getElementById('solo-max-input').value,
     missingSymbol: document.getElementById('solo-missing-symbol').value,
     direction: document.getElementById('solo-problem-direction').value,
     themeMode: document.getElementById('solo-theme-mode').value,
     btnColour: document.getElementById('solo-btn-colour').value,
     showTimer: document.getElementById('solo-show-timer').checked,
     showStats: document.getElementById('solo-show-stats').checked,
-    showNugget: document.getElementById('solo-show-nugget').checked,
+    showNugget: document.getElementById('solo-show-nugget').checked
+  };
+
+  localStorage.setItem('nugget_solo_settings', JSON.stringify(soloSettings));
+
+  config = {
+    seed: Math.random().toString(36).substring(2, 9),
+    sessionTag: "Solo Practice",
+    ops: ops,
+    maxInput: parseInt(soloSettings.maxInput, 10),
+    missingSymbol: soloSettings.missingSymbol,
+    direction: soloSettings.direction,
+    themeMode: soloSettings.themeMode,
+    btnColour: soloSettings.btnColour,
+    showTimer: soloSettings.showTimer,
+    showStats: soloSettings.showStats,
+    showNugget: soloSettings.showNugget,
     scriptUrl: null,
     sheetId: null
   };
@@ -957,7 +973,6 @@ function endGame() {
   document.getElementById('stat-accuracy').textContent = `${accuracy}%`;
   document.getElementById('stat-avg-time').textContent = `${avgTime}s`;
 
-  // Display configuration details on score screen
   document.getElementById('summary-ops').textContent = config.ops ? config.ops.join(' ') : 'None';
   document.getElementById('summary-max').textContent = config.maxInput || '-';
   
@@ -1002,7 +1017,37 @@ document.getElementById('btn-restart').addEventListener('click', (e) => {
   prepareReadyState();
 });
 
+function loadSavedSoloSettings() {
+  const saved = localStorage.getItem('nugget_solo_settings');
+  if (!saved) return;
+
+  try {
+    const s = JSON.parse(saved);
+    
+    if (s.add !== undefined) document.getElementById('solo-op-add').checked = s.add;
+    if (s.sub !== undefined) document.getElementById('solo-op-sub').checked = s.sub;
+    if (s.mul !== undefined) document.getElementById('solo-op-mul').checked = s.mul;
+    if (s.div !== undefined) document.getElementById('solo-op-div').checked = s.div;
+
+    if (s.maxInput) document.getElementById('solo-max-input').value = s.maxInput;
+    if (s.missingSymbol) document.getElementById('solo-missing-symbol').value = s.missingSymbol;
+    if (s.direction) document.getElementById('solo-problem-direction').value = s.direction;
+    if (s.themeMode) document.getElementById('solo-theme-mode').value = s.themeMode;
+    if (s.btnColour) document.getElementById('solo-btn-colour').value = s.btnColour;
+
+    if (s.showTimer !== undefined) document.getElementById('solo-show-timer').checked = s.showTimer;
+    if (s.showStats !== undefined) document.getElementById('solo-show-stats').checked = s.showStats;
+    if (s.showNugget !== undefined) document.getElementById('solo-show-nugget').checked = s.showNugget;
+
+    applyTheme(s.themeMode, s.btnColour);
+  } catch (err) {
+    console.error("Could not parse saved solo settings:", err);
+  }
+}
+
 window.addEventListener('load', () => {
+  loadSavedSoloSettings();
+
   const urlParams = new URLSearchParams(window.location.search);
   const codeParam = urlParams.get('code');
   
