@@ -47,9 +47,9 @@
 
   .hidden { display: none !important; }
 
-  #welcome-panel, #host-panel, #player-panel, #solo-panel, #stats-panel, #instructions-modal {
+  #welcome-panel, #host-panel, #player-panel, #solo-panel, #stats-panel, #instructions-modal, #history-modal-content, #share-modal-content {
     width: 100%;
-    max-width: 520px;
+    max-width: 540px;
     background-color: var(--panel-bg);
     border: 1px solid var(--border-colour);
     padding: 25px;
@@ -99,7 +99,22 @@
   .btn-back { background-color: #555; color: white; margin-top: 10px; }
 
   #game-container { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; gap: 20px; cursor: pointer; }
-  #live-stats { display: flex; justify-content: space-between; width: 100%; font-size: 18px; font-weight: bold; }
+  
+  #live-stats { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    width: 100%; 
+    font-size: 26px; 
+    font-weight: 800;
+    padding: 10px 15px;
+    background-color: var(--panel-bg);
+    border: 1px solid var(--border-colour);
+    border-radius: 10px;
+    box-sizing: border-box;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+
   #maths-card { width: 100%; background-color: var(--panel-bg); border: 1px solid var(--border-colour); border-radius: 12px; padding: 30px 20px; text-align: center; box-sizing: border-box; box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
   #problem-display { font-size: 48px; font-weight: bold; margin-bottom: 30px; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; gap: 12px; }
 
@@ -143,15 +158,48 @@
 
   .radio-option { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; cursor: pointer; font-size: 14px; font-weight: normal; }
 
-  #btn-quick-restart {
-    background-color: #dc3545;
-    color: white;
-    font-size: 13px;
-    padding: 6px 12px;
-    border-radius: 6px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  #game-controls-bottom {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+    margin-top: 5px;
   }
+
+  .btn-game-bottom {
+    flex: 1;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 14px 10px;
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: transform 0.1s, background-color 0.2s;
+  }
+  .btn-game-bottom:hover { transform: translateY(-2px); }
+
+  #btn-quick-restart { background-color: #dc3545; color: white; }
   #btn-quick-restart:hover { background-color: #bb2d3b; }
+
+  #btn-change-settings { background-color: #555; color: white; }
+  #btn-change-settings:hover { background-color: #444; }
+
+  /* History Table Styling */
+  .history-table-wrapper { max-height: 300px; overflow-y: auto; margin-top: 15px; border: 1px solid var(--border-colour); border-radius: 6px; }
+  .history-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+  .history-table th, .history-table td { padding: 8px 6px; border-bottom: 1px solid var(--border-colour); }
+  .history-table th { background-color: var(--card-bg); position: sticky; top: 0; z-index: 5; }
+  .history-table .settings-cell { font-size: 11px; opacity: 0.85; line-height: 1.2; }
+
+  /* Print styles for PDF saving */
+  @media print {
+    body { background-color: white !important; color: black !important; padding: 0; }
+    #welcome-panel, #host-panel, #player-panel, #solo-panel, #stats-panel, #game-container, .modal-overlay { display: none !important; }
+    #printable-history { display: block !important; width: 100%; color: black; font-family: sans-serif; }
+    #printable-history table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    #printable-history th, #printable-history td { border: 1px solid #ccc; padding: 8px; font-size: 12px; text-align: left; }
+    #printable-history th { background-color: #f0f0f0; }
+  }
 </style>
 </head>
 <body>
@@ -164,6 +212,7 @@
   </div>
   <div class="role-buttons">
     <button class="role-btn" id="btn-select-solo" style="background-color: #28a745;">Play Solo (Custom Settings)</button>
+    <button class="role-btn btn-open-history" style="background-color: #17a2b8;">📊 View Past Results</button>
     <button class="role-btn" id="btn-select-host" style="background-color: #6f42c1;">Host Activity (Teacher/Group)</button>
   </div>
 </div>
@@ -376,10 +425,83 @@
   </div>
 </div>
 
+<!-- Main History Modal -->
+<div id="history-modal" class="modal-overlay hidden">
+  <div id="history-modal-content">
+    <h3 style="margin-top: 0;">Saved Results History</h3>
+    <p style="font-size: 12px; opacity: 0.8; margin-bottom: 10px;">Results are automatically saved to your browser with full run settings included.</p>
+    
+    <div class="history-table-wrapper">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Settings</th>
+            <th>Score</th>
+            <th>Acc</th>
+            <th>Speed</th>
+          </tr>
+        </thead>
+        <tbody id="history-table-body">
+          <!-- Dynamically Populated -->
+        </tbody>
+      </table>
+    </div>
+
+    <div style="display: flex; gap: 10px; margin-top: 15px;">
+      <button id="btn-open-share" style="background-color: #28a745; color: white; flex: 1;">📤 Share / Export</button>
+      <button id="btn-clear-history" style="background-color: #dc3545; color: white; flex: 1;">Clear History</button>
+      <button id="btn-close-history" class="btn-back" style="flex: 1; margin-top: 0;">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Share & Export Options Modal -->
+<div id="share-modal" class="modal-overlay hidden">
+  <div id="share-modal-content">
+    <h3 style="margin-top: 0;">Share / Export History</h3>
+    <p style="font-size: 13px; opacity: 0.9; margin-bottom: 15px;">Choose how you want to save or share your historical maths runs:</p>
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <button id="btn-export-pdf" class="btn-primary" style="background-color: #6f42c1;">📄 Save / Print as PDF</button>
+      <hr style="border: 0; border-top: 1px solid var(--border-colour); margin: 5px 0; width: 100%;">
+      
+      <div style="font-weight: bold; font-size: 13px;">Copy for Spreadsheets (Excel / Google Sheets):</div>
+      <button id="btn-copy-headings" class="btn-primary" style="background-color: #17a2b8;">📋 Copy with Column Headings</button>
+      <button id="btn-copy-data-only" class="btn-primary" style="background-color: #0056b3;">📋 Copy Data Only (No Headings)</button>
+    </div>
+
+    <button id="btn-close-share" class="btn-back" style="width: 100%; margin-top: 15px;">Back to History</button>
+  </div>
+</div>
+
+<!-- Printable View for PDF Generation -->
+<div id="printable-history" class="hidden">
+  <h1 style="margin: 0 0 5px 0;">Nugget's Minute of Maths - Player History Report</h1>
+  <p style="margin: 0 0 15px 0; font-size: 14px; color: #333;">
+    <b>Player Name:</b> <span id="print-player-name">Anonymous</span> | <b>Generated on:</b> <span id="print-date"></span>
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>Date & Time</th>
+        <th>Operations</th>
+        <th>Max Input</th>
+        <th>Format</th>
+        <th>Score (Correct/Attempts)</th>
+        <th>Accuracy</th>
+        <th>Avg Speed</th>
+      </tr>
+    </thead>
+    <tbody id="printable-table-body">
+      <!-- Populated dynamically during PDF printing -->
+    </tbody>
+  </table>
+</div>
+
 <div id="game-container" class="hidden">
   <div id="live-stats">
     <span id="live-timer-display">Time: 60s</span>
-    <button id="btn-quick-restart" class="hidden">↺ Restart Run</button>
     <span id="live-score-display">Score: 0 (100%)</span>
   </div>
 
@@ -402,6 +524,11 @@
       <button class="btn-choice" data-choice="2">-</button>
       <button class="btn-choice" data-choice="3">-</button>
     </div>
+  </div>
+
+  <div id="game-controls-bottom" class="hidden">
+    <button id="btn-quick-restart" class="btn-game-bottom">↺ Restart Run</button>
+    <button id="btn-change-settings" class="btn-game-bottom">⚙ Change Settings</button>
   </div>
 </div>
 
@@ -433,9 +560,12 @@
     </div>
   </div>
 
-  <div style="margin-top: 20px; display: flex; gap: 10px;">
-    <button id="btn-restart" class="btn-primary" style="flex: 1;">Play Again</button>
-    <button class="btn-back btn-go-welcome" style="flex: 1; margin-top: 0;">Main Menu</button>
+  <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+    <div style="display: flex; gap: 10px;">
+      <button id="btn-restart" class="btn-primary" style="flex: 1;">Play Again</button>
+      <button class="btn-back btn-go-welcome" style="flex: 1; margin-top: 0;">Main Menu</button>
+    </div>
+    <button class="btn-open-history" style="background-color: #17a2b8; color: white;">📊 View All Past Results</button>
   </div>
 </div>
 
@@ -584,12 +714,17 @@ const nuggetContainer = document.getElementById('nugget-container');
 const nuggetImg = document.getElementById('nugget-img');
 const speechBubble = document.getElementById('speech-bubble');
 const guideModal = document.getElementById('guide-modal');
+const historyModal = document.getElementById('history-modal');
+const shareModal = document.getElementById('share-modal');
+const historyTableBody = document.getElementById('history-table-body');
 
 const radioSheetNew = document.getElementById('radio-sheet-new');
 const radioSheetExisting = document.getElementById('radio-sheet-existing');
 const existingSheetContainer = document.getElementById('existing-sheet-container');
 const existingSheetInput = document.getElementById('existing-sheet-input');
+const gameControlsBottom = document.getElementById('game-controls-bottom');
 const btnQuickRestart = document.getElementById('btn-quick-restart');
+const btnChangeSettings = document.getElementById('btn-change-settings');
 
 if (localStorage.getItem('nugget_script_url')) {
   scriptUrlInput.value = localStorage.getItem('nugget_script_url');
@@ -652,6 +787,159 @@ document.getElementById('btn-select-solo').addEventListener('click', () => {
 document.getElementById('btn-select-host').addEventListener('click', () => {
   welcomePanel.classList.add('hidden');
   hostPanel.classList.remove('hidden');
+});
+
+/* History & Export Functions */
+document.querySelectorAll('.btn-open-history').forEach(btn => {
+  btn.addEventListener('click', () => {
+    renderHistoryTable();
+    historyModal.classList.remove('hidden');
+  });
+});
+
+document.getElementById('btn-close-history').addEventListener('click', () => {
+  historyModal.classList.add('hidden');
+});
+
+document.getElementById('btn-clear-history').addEventListener('click', () => {
+  if (confirm("Are you sure you want to clear your saved results history?")) {
+    localStorage.removeItem('nugget_local_history');
+    renderHistoryTable();
+  }
+});
+
+document.getElementById('btn-open-share').addEventListener('click', () => {
+  historyModal.classList.add('hidden');
+  shareModal.classList.remove('hidden');
+});
+
+document.getElementById('btn-close-share').addEventListener('click', () => {
+  shareModal.classList.add('hidden');
+  historyModal.classList.remove('hidden');
+});
+
+function saveRunToLocalStorage(runData) {
+  let history = [];
+  try {
+    history = JSON.parse(localStorage.getItem('nugget_local_history')) || [];
+  } catch (err) {
+    history = [];
+  }
+  history.unshift(runData); // Prepend to show newest first
+  localStorage.setItem('nugget_local_history', JSON.stringify(history));
+}
+
+function renderHistoryTable() {
+  historyTableBody.innerHTML = "";
+  let history = [];
+  try {
+    history = JSON.parse(localStorage.getItem('nugget_local_history')) || [];
+  } catch (err) {
+    history = [];
+  }
+
+  if (history.length === 0) {
+    historyTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; opacity: 0.7;">No saved runs yet!</td></tr>`;
+    return;
+  }
+
+  history.forEach(run => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${run.date}</td>
+      <td class="settings-cell"><b>Ops:</b> ${run.ops || '-'}<br><b>Max:</b> ${run.maxInput || '-'}<br><b>Format:</b> ${run.format || '-'}</td>
+      <td><b>${run.score}</b>/${run.attempts}</td>
+      <td>${run.accuracy}%</td>
+      <td>${run.avgTime}s</td>
+    `;
+    historyTableBody.appendChild(tr);
+  });
+}
+
+function getStoredHistoryArray() {
+  try {
+    return JSON.parse(localStorage.getItem('nugget_local_history')) || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+/* Copy TSV Data to Clipboard */
+function copyHistoryToClipboard(includeHeadings) {
+  const history = getStoredHistoryArray();
+  if (history.length === 0) {
+    alert("No history available to copy.");
+    return;
+  }
+
+  let lines = [];
+  if (includeHeadings) {
+    lines.push(["Date", "Operations", "Max Input", "Format Style", "Correct Answers", "Total Attempts", "Accuracy (%)", "Avg Speed (s)"].join("\t"));
+  }
+
+  history.forEach(run => {
+    lines.push([
+      run.date,
+      run.ops || "",
+      run.maxInput || "",
+      run.format || "",
+      run.score,
+      run.attempts,
+      run.accuracy,
+      run.avgTime
+    ].join("\t"));
+  });
+
+  const textToCopy = lines.join("\n");
+  navigator.clipboard.writeText(textToCopy).then(() => {
+    alert(includeHeadings ? "✅ History copied to clipboard with column headings! Ready to paste into Excel/Google Sheets." : "✅ Raw history data copied to clipboard!");
+  }).catch(err => {
+    alert("Could not copy to clipboard. Please allow clipboard permissions.");
+  });
+}
+
+document.getElementById('btn-copy-headings').addEventListener('click', () => copyHistoryToClipboard(true));
+document.getElementById('btn-copy-data-only').addEventListener('click', () => copyHistoryToClipboard(false));
+
+/* PDF Export via Browser Print */
+document.getElementById('btn-export-pdf').addEventListener('click', () => {
+  const history = getStoredHistoryArray();
+  if (history.length === 0) {
+    alert("No history available to export.");
+    return;
+  }
+
+  // Prompt the player to enter/confirm their name for the PDF report
+  const defaultName = (playerName && playerName !== "Anonymous" && playerName !== "Solo Player") ? playerName : "";
+  const enteredName = prompt("Enter your name to include on the PDF report:", defaultName);
+
+  // If the user clicks 'Cancel', stop PDF generation
+  if (enteredName === null) {
+    return;
+  }
+
+  const finalPlayerName = enteredName.trim() !== "" ? enteredName.trim() : "Anonymous";
+  document.getElementById('print-player-name').textContent = finalPlayerName;
+  document.getElementById('print-date').textContent = new Date().toLocaleString();
+
+  const printTableBody = document.getElementById('printable-table-body');
+  printTableBody.innerHTML = "";
+
+  history.forEach(run => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${run.date}</td>
+      <td>${run.ops || '-'}</td>
+      <td>${run.maxInput || '-'}</td>
+      <td>${run.format || '-'}</td>
+      <td><b>${run.score}</b> / ${run.attempts}</td>
+      <td>${run.accuracy}%</td>
+      <td>${run.avgTime}s</td>
+    `;
+    printTableBody.appendChild(tr);
+  });
+
+  window.print();
 });
 
 document.getElementById('btn-solo-start').addEventListener('click', () => {
@@ -831,6 +1119,13 @@ btnQuickRestart.addEventListener('click', (e) => {
   prepareReadyState();
 });
 
+btnChangeSettings.addEventListener('click', (e) => {
+  e.stopPropagation();
+  clearInterval(timerInterval);
+  gameContainer.classList.add('hidden');
+  soloPanel.classList.remove('hidden');
+});
+
 function prepareReadyState() {
   playerPanel.classList.add('hidden');
   soloPanel.classList.add('hidden');
@@ -838,9 +1133,9 @@ function prepareReadyState() {
   gameContainer.classList.remove('hidden');
 
   if (isSoloMode) {
-    btnQuickRestart.classList.remove('hidden');
+    gameControlsBottom.classList.remove('hidden');
   } else {
-    btnQuickRestart.classList.add('hidden');
+    gameControlsBottom.classList.add('hidden');
   }
 
   startPrompt.classList.remove('hidden');
@@ -1001,10 +1296,22 @@ function endGame() {
   document.getElementById('summary-ops').textContent = config.ops ? config.ops.join(' ') : 'None';
   document.getElementById('summary-max').textContent = config.maxInput || '-';
   
-  let formatText = 'Forward Only';
-  if (config.direction === 'backward') formatText = 'Backward Only';
-  if (config.direction === 'mixed') formatText = 'Mixed (Forward & Backward)';
+  let formatText = 'Forward';
+  if (config.direction === 'backward') formatText = 'Backward';
+  if (config.direction === 'mixed') formatText = 'Mixed';
   document.getElementById('summary-format').textContent = formatText;
+
+  // Save detailed run settings & performance to Local Storage
+  saveRunToLocalStorage({
+    date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }),
+    score: correctCount,
+    attempts: totalAttempts,
+    accuracy: accuracy,
+    avgTime: avgTime,
+    ops: config.ops ? config.ops.join(' ') : '',
+    maxInput: config.maxInput || '',
+    format: formatText
+  });
 
   gameContainer.classList.add('hidden');
   statsPanel.classList.remove('hidden');
