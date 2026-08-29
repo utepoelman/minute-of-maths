@@ -71,6 +71,13 @@
 
   .welcome-header { text-align: center; margin-bottom: 20px; }
   .welcome-nugget { width: 120px; height: 120px; object-fit: contain; margin: 0 auto 15px auto; display: block; }
+  .history-header-nugget { 
+    width: 60px; 
+    height: 60px; 
+    object-fit: contain; 
+    transform: scaleX(-1); /* Flips Nugget horizontally to look left toward the table */
+  }
+  
   .role-buttons { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
 
   .role-btn {
@@ -199,6 +206,37 @@
     #printable-history table { width: 100%; border-collapse: collapse; margin-top: 15px; }
     #printable-history th, #printable-history td { border: 1px solid #ccc; padding: 8px; font-size: 12px; text-align: left; }
     #printable-history th { background-color: #f0f0f0; }
+
+    .pdf-footer {
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 2px dashed #ccc;
+      padding-top: 15px;
+    }
+    .pdf-footer-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .pdf-footer-nugget {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+    }
+    .pdf-signature-area {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    .paw-print-svg {
+      width: 32px;
+      height: 32px;
+      fill: #333;
+      margin-bottom: 4px;
+    }
   }
 </style>
 </head>
@@ -428,8 +466,13 @@
 <!-- Main History Modal -->
 <div id="history-modal" class="modal-overlay hidden">
   <div id="history-modal-content">
-    <h3 style="margin-top: 0;">Saved Results History</h3>
-    <p style="font-size: 12px; opacity: 0.8; margin-bottom: 10px;">Results are automatically saved to your browser with full run settings included.</p>
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+      <div>
+        <h3 style="margin: 0;">Saved Results History</h3>
+        <p style="font-size: 12px; opacity: 0.8; margin: 4px 0 0 0;">Results saved locally with full maths run settings.</p>
+      </div>
+      <img src="Nugget_black_bg.png" id="history-nugget-img" class="history-header-nugget" alt="Nugget">
+    </div>
     
     <div class="history-table-wrapper">
       <table class="history-table">
@@ -497,6 +540,28 @@
       <!-- Populated dynamically during PDF printing -->
     </tbody>
   </table>
+
+  <!-- PDF Footer with Nugget & Paw Signature -->
+  <div class="pdf-footer">
+    <div class="pdf-footer-left">
+      <img src="Nugget.png" class="pdf-footer-nugget" alt="Nugget the Hamster">
+      <div style="font-size: 13px; color: #444;">
+        <b>Great effort on your maths runs!</b><br>
+        Verified by Nugget the Hamster
+      </div>
+    </div>
+    <div class="pdf-signature-area">
+      <svg class="paw-print-svg" viewBox="0 0 100 100">
+        <!-- Hamster Paw Print SVG -->
+        <ellipse cx="50" cy="65" rx="22" ry="18" />
+        <circle cx="25" cy="35" r="9" />
+        <circle cx="42" cy="25" r="9" />
+        <circle cx="60" cy="25" r="9" />
+        <circle cx="77" cy="35" r="9" />
+      </svg>
+      <div style="font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #555;">Nugget's Paw Print</div>
+    </div>
+  </div>
 </div>
 
 <div id="game-container" class="hidden">
@@ -702,6 +767,7 @@ const gameContainer = document.getElementById('game-container');
 const statsPanel = document.getElementById('stats-panel');
 const scriptUrlInput = document.getElementById('script-url');
 const welcomeNuggetImg = document.getElementById('welcome-nugget-img');
+const historyNuggetImg = document.getElementById('history-nugget-img');
 const themeSelect = document.getElementById('theme-mode');
 const btnColourSelect = document.getElementById('btn-colour');
 const startPrompt = document.getElementById('start-prompt');
@@ -744,6 +810,7 @@ radioSheetExisting.addEventListener('change', () => existingSheetContainer.class
 function applyTheme(theme, btnColour) {
   document.body.classList.toggle('light-mode', theme === 'light');
   welcomeNuggetImg.src = theme === 'dark' ? 'Nugget_black_bg.png' : 'Nugget.png';
+  historyNuggetImg.src = theme === 'dark' ? 'Nugget_black_bg.png' : 'Nugget.png';
   nuggetImg.src = theme === 'dark' ? 'Nugget_black_bg.png' : 'Nugget.png';
   if (btnColour) {
     document.documentElement.style.setProperty('--primary-btn', btnColour);
@@ -839,7 +906,7 @@ function renderHistoryTable() {
   }
 
   if (history.length === 0) {
-    historyTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; opacity: 0.7;">No saved runs yet!</td></tr>`;
+    historyTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; opacity: 0.7;">No saved maths runs yet!</td></tr>`;
     return;
   }
 
@@ -909,11 +976,9 @@ document.getElementById('btn-export-pdf').addEventListener('click', () => {
     return;
   }
 
-  // Prompt the player to enter/confirm their name for the PDF report
   const defaultName = (playerName && playerName !== "Anonymous" && playerName !== "Solo Player") ? playerName : "";
   const enteredName = prompt("Enter your name to include on the PDF report:", defaultName);
 
-  // If the user clicks 'Cancel', stop PDF generation
   if (enteredName === null) {
     return;
   }
@@ -1301,7 +1366,6 @@ function endGame() {
   if (config.direction === 'mixed') formatText = 'Mixed';
   document.getElementById('summary-format').textContent = formatText;
 
-  // Save detailed run settings & performance to Local Storage
   saveRunToLocalStorage({
     date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }),
     score: correctCount,
