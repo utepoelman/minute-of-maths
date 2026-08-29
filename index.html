@@ -41,8 +41,7 @@
 
   .hidden { display: none !important; }
 
-  /* SETUP PANEL */
-  #setup-panel {
+  #welcome-panel, #host-panel, #player-panel, #solo-panel, #stats-panel, #instructions-modal {
     width: 100%;
     max-width: 520px;
     background-color: var(--panel-bg);
@@ -50,291 +49,203 @@
     padding: 25px;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-sizing: border-box;
   }
 
-  .form-group {
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .checkbox-group {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    margin-top: 5px;
-  }
-
-  .checkbox-label {
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.75);
     display: flex;
     align-items: center;
-    gap: 5px;
-    font-size: 14px;
-    font-weight: normal;
-    cursor: pointer;
+    justify-content: center;
+    z-index: 1000;
+    padding: 15px;
   }
 
-  label {
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 6px;
-  }
+  .welcome-header { text-align: center; margin-bottom: 20px; }
+  .welcome-nugget { width: 120px; height: 120px; object-fit: contain; margin: 0 auto 15px auto; display: block; }
+  .role-buttons { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
 
+  .role-btn {
+    padding: 16px; font-size: 16px; font-weight: bold; border-radius: 8px; border: none;
+    cursor: pointer; background-color: var(--primary-btn); color: white;
+    transition: transform 0.1s, background-color 0.2s;
+  }
+  .role-btn:hover { background-color: var(--primary-btn-hover); transform: translateY(-2px); }
+
+  .form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
+  .checkbox-group { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 5px; }
+  .checkbox-label { display: flex; align-items: center; gap: 5px; font-size: 14px; font-weight: normal; cursor: pointer; }
+
+  label { font-size: 14px; font-weight: bold; margin-bottom: 6px; }
   select, input[type="text"], input[type="number"] {
-    padding: 10px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid var(--border-colour);
-    background-color: var(--input-bg);
-    color: var(--text-colour);
+    padding: 10px; font-size: 14px; border-radius: 4px; border: 1px solid var(--border-colour);
+    background-color: var(--input-bg); color: var(--text-colour);
   }
 
   button {
-    cursor: pointer;
-    padding: 12px;
-    font-size: 15px;
-    border-radius: 4px;
-    border: none;
-    font-weight: bold;
-    transition: background-color 0.2s, transform 0.1s ease;
+    cursor: pointer; padding: 12px; font-size: 15px; border-radius: 4px; border: none;
+    font-weight: bold; transition: background-color 0.2s, transform 0.1s ease;
   }
+  .btn-primary { background-color: var(--primary-btn); color: white; }
+  .btn-primary:hover { background-color: var(--primary-btn-hover); }
+  .btn-back { background-color: #555; color: white; margin-top: 10px; }
 
-  .btn-primary {
-    background-color: var(--primary-btn);
-    color: white;
-  }
+  #game-container { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; gap: 20px; cursor: pointer; }
+  #live-stats { display: flex; justify-content: space-between; width: 100%; font-size: 18px; font-weight: bold; }
+  #maths-card { width: 100%; background-color: var(--panel-bg); border: 1px solid var(--border-colour); border-radius: 12px; padding: 30px 20px; text-align: center; box-sizing: border-box; box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+  #problem-display { font-size: 48px; font-weight: bold; margin-bottom: 30px; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; gap: 12px; }
 
-  .btn-primary:hover {
-    background-color: var(--primary-btn-hover);
-  }
+  .math-box { display: inline-block; width: 0.95em; height: 0.8em; vertical-align: -0.05em; }
+  .math-box rect { fill: none; stroke: currentColor; stroke-width: 2.2; rx: 4px; ry: 4px; }
 
-  /* GAME CONTAINER */
-  #game-container {
-    width: 100%;
-    max-width: 500px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    cursor: pointer;
-  }
+  #start-prompt { font-size: 24px; font-weight: bold; color: var(--primary-btn); padding: 40px 10px; animation: pulse 1.5s infinite; }
+  body:not(.light-mode) #start-prompt { color: #4da6ff; }
+  @keyframes pulse { 0% { opacity: 0.6; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } 100% { opacity: 0.6; transform: scale(0.98); } }
 
-  #live-stats {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    font-size: 18px;
-    font-weight: bold;
-  }
+  #options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
+  .btn-choice { background-color: var(--primary-btn); color: white; font-size: 28px; padding: 18px; border-radius: 8px; border: none; box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+  .btn-choice:hover { background-color: var(--primary-btn-hover); transform: translateY(-2px); }
 
-  #maths-card {
-    width: 100%;
-    background-color: var(--panel-bg);
-    border: 1px solid var(--border-colour);
-    border-radius: 12px;
-    padding: 30px 20px;
-    text-align: center;
-    box-sizing: border-box;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
-  }
+  #nugget-container { display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%; height: 120px; }
+  .nugget-wrapper { width: 100px; height: 100px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  #nugget-img { height: 100px; width: 100px; object-fit: contain; }
+  .speech-bubble-wrapper { width: 260px; display: flex; align-items: center; }
+  .speech-bubble { position: relative; background: #ffffff; color: #121212; border-radius: 12px; padding: 12px 16px; font-size: 16px; font-weight: bold; width: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.15); box-sizing: border-box; }
+  .speech-bubble::after { content: ''; position: absolute; left: -10px; top: 50%; transform: translateY(-50%); border-width: 6px 10px 6px 0; border-style: solid; border-color: transparent #ffffff transparent transparent; display: block; width: 0; }
 
-  #problem-display {
-    font-size: 48px;
-    font-weight: bold;
-    margin-bottom: 30px;
-    letter-spacing: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-  }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+  .stat-card { background-color: var(--card-bg); padding: 15px; border-radius: 6px; text-align: center; }
+  .stat-card .value { font-size: 24px; font-weight: bold; color: var(--primary-btn); }
+  body:not(.light-mode) .stat-card .value { color: #4da6ff; }
+  .stat-card .label { font-size: 12px; opacity: 0.8; }
 
-  /* DYNAMIC SVG RECTANGLE MATCHING TEXT CAP-HEIGHT */
-  .math-box {
-    display: inline-block;
-    width: 0.95em;
-    height: 0.8em;
-    vertical-align: -0.05em;
-  }
+  ol.guide-steps { padding-left: 20px; font-size: 13px; line-height: 1.6; }
+  ol.guide-steps li { margin-bottom: 8px; }
 
-  .math-box rect {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2.2;
-    rx: 4px;
-    ry: 4px;
-  }
-
-  /* START PROMPT OVERLAY ON CARD */
-  #start-prompt {
-    font-size: 24px;
-    font-weight: bold;
-    color: var(--primary-btn);
-    padding: 40px 10px;
-    animation: pulse 1.5s infinite;
-  }
-
-  body:not(.light-mode) #start-prompt {
-    color: #4da6ff;
-  }
-
-  @keyframes pulse {
-    0% { opacity: 0.6; transform: scale(0.98); }
-    50% { opacity: 1; transform: scale(1.02); }
-    100% { opacity: 0.6; transform: scale(0.98); }
-  }
-
-  /* 4-OPTION CHOICE GRID */
-  #options-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    width: 100%;
-  }
-
-  .btn-choice {
-    background-color: var(--primary-btn);
-    color: white;
-    font-size: 28px;
-    padding: 18px;
-    border-radius: 8px;
-    border: none;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  }
-
-  .btn-choice:hover {
-    background-color: var(--primary-btn-hover);
-    transform: translateY(-2px);
-  }
-
-  .btn-choice:active {
-    transform: translateY(1px);
-  }
-
-  /* NUGGET CONTAINER & STABLE LAYOUT */
-  #nugget-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    width: 100%;
-    height: 120px;
-  }
-
-  .nugget-wrapper {
-    width: 100px;
-    height: 100px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  #nugget-img {
-    height: 100px;
-    width: 100px;
-    object-fit: contain;
-  }
-
-  .speech-bubble-wrapper {
-    width: 260px;
-    display: flex;
-    align-items: center;
-  }
-
-  .speech-bubble {
-    position: relative;
-    background: #ffffff;
-    color: #121212;
-    border-radius: 12px;
-    padding: 12px 16px;
-    font-size: 16px;
-    font-weight: bold;
-    width: 100%;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    box-sizing: border-box;
-  }
-
-  .speech-bubble::after {
-    content: '';
-    position: absolute;
-    left: -10px;
-    top: 50%;
-    transform: translateY(-50%);
-    border-width: 6px 10px 6px 0;
-    border-style: solid;
-    border-color: transparent #ffffff transparent transparent;
-    display: block;
-    width: 0;
-  }
-
-  /* STATS PANEL */
-  #stats-panel {
-    width: 100%;
-    max-width: 550px;
-    background-color: var(--panel-bg);
-    border: 1px solid var(--border-colour);
-    padding: 25px;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  }
-
-  .stat-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin: 20px 0;
-  }
-
-  .stat-card {
-    background-color: var(--card-bg);
-    padding: 15px;
-    border-radius: 6px;
-  }
-
-  .stat-card .value {
-    font-size: 24px;
-    font-weight: bold;
-    color: var(--primary-btn);
-  }
-
-  body:not(.light-mode) .stat-card .value {
-    color: #4da6ff;
-  }
-
-  .stat-card .label {
-    font-size: 12px;
-    opacity: 0.8;
-  }
-
-  .button-group {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .btn-copy {
-    background-color: #198754;
-    color: white;
-    min-width: 180px;
-  }
-
-  .btn-copy:hover {
-    background-color: #146c43;
-  }
-
-  .btn-copy.copied {
-    background-color: #0d6efd !important;
-  }
+  .radio-option { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; cursor: pointer; font-size: 14px; font-weight: normal; }
 </style>
 </head>
 <body>
 
-<div id="setup-panel">
-  <h2 style="margin-top: 0;">Nugget's Minute of Maths</h2>
+<div id="welcome-panel">
+  <img src="Nugget_black_bg.png" id="welcome-nugget-img" class="welcome-nugget" alt="Nugget the Hamster">
+  <div class="welcome-header">
+    <h2>Nugget's Minute of Maths</h2>
+    <p>Choose your mode to continue:</p>
+  </div>
+  <div class="role-buttons">
+    <button class="role-btn" id="btn-select-solo" style="background-color: #28a745;">Play Solo (Custom Settings)</button>
+    <button class="role-btn" id="btn-select-host" style="background-color: #6f42c1;">Host Activity (Teacher/Group)</button>
+  </div>
+</div>
+
+<div id="player-panel" class="hidden">
+  <h2 style="margin-top: 0;">Join Activity</h2>
+  <p style="font-size: 14px; margin-bottom: 15px; opacity: 0.9;">You've opened a direct join link!</p>
   
+  <div class="form-group">
+    <label for="player-name">Your Name or ID:</label>
+    <input type="text" id="player-name" placeholder="e.g. Alex S.">
+  </div>
+
+  <p style="font-size: 12px; opacity: 0.8; margin: 0 0 15px 0; line-height: 1.4;">
+    🔒 <b>Note:</b> By joining a hosted game, your score and activity summary will be shared with the host.
+  </p>
+
+  <button id="btn-player-start" class="btn-primary" style="width: 100%;">Join & Play</button>
+  <button class="btn-back btn-go-welcome" style="width: 100%;">Main Menu</button>
+</div>
+
+<div id="solo-panel" class="hidden">
+  <h2 style="margin-top: 0;">Solo Practice Setup</h2>
+  <div class="form-group">
+    <label>Operations Included:</label>
+    <div class="checkbox-group">
+      <label class="checkbox-label"><input type="checkbox" id="solo-op-add" checked> Addition (+)</label>
+      <label class="checkbox-label"><input type="checkbox" id="solo-op-sub" checked> Subtraction (-)</label>
+      <label class="checkbox-label"><input type="checkbox" id="solo-op-mul"> Multiplication (×)</label>
+      <label class="checkbox-label"><input type="checkbox" id="solo-op-div"> Division (÷)</label>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="solo-max-input">Largest Input Value:</label>
+    <input type="number" id="solo-max-input" value="10" min="1" max="1000">
+  </div>
+  <div class="form-group">
+    <label for="solo-missing-symbol">Missing Value Style:</label>
+    <select id="solo-missing-symbol">
+      <option value="box" selected>Box (☐)</option>
+      <option value="question">Question Mark (?)</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="solo-problem-direction">Problem Format:</label>
+    <select id="solo-problem-direction">
+      <option value="forward" selected>Forward Only (e.g., 5 + 3 = ...)</option>
+      <option value="backward">Backward Only (e.g., 5 + ... = 8)</option>
+      <option value="mixed">Mixed (Forward & Backward)</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="solo-theme-mode">Background Theme:</label>
+    <select id="solo-theme-mode">
+      <option value="dark">Dark Theme</option>
+      <option value="light">Light Theme</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="solo-btn-colour">Button Theme Colour:</label>
+    <select id="solo-btn-colour">
+      <option value="#0056b3">Classic Blue</option>
+      <option value="#28a745" selected>Emerald Green</option>
+      <option value="#6f42c1">Purple</option>
+      <option value="#d63384">Pink</option>
+      <option value="#fd7e14">Orange</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Interface Displays:</label>
+    <div class="checkbox-group">
+      <label class="checkbox-label"><input type="checkbox" id="solo-show-timer" checked> Live Countdown Timer</label>
+      <label class="checkbox-label"><input type="checkbox" id="solo-show-stats" checked> Live Score/Accuracy</label>
+      <label class="checkbox-label"><input type="checkbox" id="solo-show-nugget" checked> Nugget Encouragements</label>
+    </div>
+  </div>
+  <button id="btn-solo-start" class="btn-primary" style="width: 100%; background-color: #28a745;">Start Solo Game</button>
+  <button class="btn-back btn-go-welcome" style="width: 100%;">Back</button>
+</div>
+
+<div id="host-panel" class="hidden">
+  <h2 style="margin-top: 0;">Host Activity Setup</h2>
+  
+  <div class="form-group">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+      <label for="script-url" style="margin: 0;">Google Apps Script Web App URL:</label>
+      <button id="btn-show-guide" style="background: none; border: none; color: #4da6ff; text-decoration: underline; font-size: 12px; padding: 0; cursor: pointer;">First-Time Host Setup Instructions</button>
+    </div>
+    <input type="text" id="script-url" placeholder="https://script.google.com/macros/s/.../exec">
+    <small style="opacity: 0.7; margin-top: 4px;">Enter once. Automatically saved for future sessions.</small>
+  </div>
+
+  <div class="form-group">
+    <label>Google Sheet Destination:</label>
+    <label class="radio-option">
+      <input type="radio" name="sheet-option" value="new" id="radio-sheet-new" checked>
+      Create a new Google Sheet automatically
+    </label>
+    <label class="radio-option">
+      <input type="radio" name="sheet-option" value="existing" id="radio-sheet-existing">
+      Use an existing Google Sheet
+    </label>
+    
+    <div id="existing-sheet-container" class="hidden" style="margin-top: 8px;">
+      <input type="text" id="existing-sheet-input" placeholder="Paste Google Sheet URL or Sheet ID...">
+      <small style="opacity: 0.7; margin-top: 4px;">Data will be appended to this sheet.</small>
+    </div>
+  </div>
+
   <div class="form-group">
     <label>Operations Included:</label>
     <div class="checkbox-group">
@@ -347,7 +258,7 @@
 
   <div class="form-group">
     <label for="max-input">Largest Input Value:</label>
-    <input type="number" id="max-input" value="10" min="1" max="1000" placeholder="Type a maximum number (e.g. 10)">
+    <input type="number" id="max-input" value="10" min="1" max="1000">
   </div>
 
   <div class="form-group">
@@ -362,12 +273,10 @@
     <label for="problem-direction">Problem Format:</label>
     <select id="problem-direction">
       <option value="forward" selected>Forward Only (e.g., 5 + 3 = ...)</option>
-      <option value="backward">Backward Only (e.g., 5 + ... = 8 or ... + 3 = 8)</option>
+      <option value="backward">Backward Only (e.g., 5 + ... = 8)</option>
       <option value="mixed">Mixed (Forward & Backward)</option>
     </select>
   </div>
-
-  <hr style="border: 0; border-top: 1px solid var(--border-colour); margin: 15px 0;">
 
   <div class="form-group">
     <label for="theme-mode">Background Theme:</label>
@@ -391,18 +300,47 @@
   <div class="form-group">
     <label>Interface Displays:</label>
     <div class="checkbox-group">
-      <label class="checkbox-label"><input type="checkbox" id="show-timer" checked> Show Live Countdown Timer</label>
-      <label class="checkbox-label"><input type="checkbox" id="show-stats" checked> Show Live Score/Accuracy</label>
-      <label class="checkbox-label"><input type="checkbox" id="show-nugget" checked> Show Nugget Encouragements</label>
+      <label class="checkbox-label"><input type="checkbox" id="show-timer" checked> Live Countdown Timer</label>
+      <label class="checkbox-label"><input type="checkbox" id="show-stats" checked> Live Score/Accuracy</label>
+      <label class="checkbox-label"><input type="checkbox" id="show-nugget" checked> Nugget Encouragements</label>
     </div>
   </div>
 
-  <div class="form-group">
-    <label for="custom-seed">Sequence Seed (Optional for replayability):</label>
-    <input type="text" id="custom-seed" placeholder="e.g., maths-456">
+  <button id="btn-generate-code" class="btn-primary" style="width: 100%;">Create Activity & Direct Link</button>
+  
+  <div id="host-results-area" class="hidden" style="margin-top: 15px;">
+    <hr style="border: 0; border-top: 1px solid var(--border-colour); margin: 15px 0;">
+    <button id="btn-copy-link" class="btn-primary" style="width: 100%; margin-bottom: 12px; background-color: #28a745;">🔗 Copy Direct Join Link</button>
+    <a id="sheet-link" href="#" target="_blank" style="color: #4da6ff; font-weight: bold; display: block; text-align: center;">Open Response Google Sheet ↗</a>
   </div>
 
-  <button id="btn-start" class="btn-primary" style="width: 100%; margin-top: 10px;">Start Activity (1 Min)</button>
+  <button class="btn-back btn-go-welcome" style="width: 100%;">Back</button>
+</div>
+
+<div id="guide-modal" class="modal-overlay hidden">
+  <div id="instructions-modal">
+    <h3 style="margin-top: 0;">1-Minute Setup Guide (First-Time Hosts Only)</h3>
+    <p style="font-size: 13px; opacity: 0.9;">
+      ⚡ <b>Note:</b> You only need to perform this setup <u>once</u>! A free Google Account is required to deploy the script and save player response sheets.
+    </p>
+
+    <button id="btn-copy-apps-script" class="btn-primary" style="width: 100%; margin-bottom: 15px; background-color: #28a745;">
+      📋 1. Click to Copy Apps Script Code
+    </button>
+
+    <ol class="guide-steps">
+      <li>Open <a href="https://script.new" target="_blank" style="color: #4da6ff;">script.new</a> in a new browser tab (sign in to Google if prompted).</li>
+      <li>Select all existing text in the editor, delete it, and <b>Paste</b> the copied code.</li>
+      <li>Click <b>Deploy</b> (top right) ➔ <b>New deployment</b>.</li>
+      <li>Click the Gear icon ⚙️ next to <i>Select type</i> and choose <b>Web app</b>.</li>
+      <li>Set <i>Execute as</i> to: <b>Me</b>.</li>
+      <li>Set <i>Who has access</i> to: <b>Anyone</b>.</li>
+      <li>Click <b>Deploy</b>, authorize permissions if prompted, and copy the generated <b>Web App URL</b>.</li>
+      <li>Paste that URL into the host setup screen!</li>
+    </ol>
+
+    <button id="btn-close-guide" class="btn-back" style="width: 100%;">Done / Close</button>
+  </div>
 </div>
 
 <div id="game-container" class="hidden">
@@ -434,7 +372,7 @@
 </div>
 
 <div id="stats-panel" class="hidden">
-  <h2>Time's Up!</h2>
+  <h2 style="text-align: center;">Time's Up!</h2>
   <div class="stat-grid">
     <div class="stat-card">
       <div class="value" id="stat-score">0</div>
@@ -454,16 +392,100 @@
     </div>
   </div>
 
-  <div class="button-group">
-    <button id="btn-copy-data" class="btn-copy">Copy Data (Single Row)</button>
-    <button id="btn-copy-headers" class="btn-copy">Copy Data (With Headers)</button>
-    <button id="btn-restart" class="btn-primary">Play Again</button>
-    <button id="btn-change-settings" style="background-color: #555; color: white;">Change Settings</button>
+  <div style="margin-top: 20px; display: flex; gap: 10px;">
+    <button id="btn-restart" class="btn-primary" style="flex: 1;">Play Again</button>
+    <button class="btn-back btn-go-welcome" style="flex: 1; margin-top: 0;">Main Menu</button>
   </div>
 </div>
 
 <script>
-// Seeded PRNG Helpers (mulberry32)
+const APPS_SCRIPT_SOURCE = `function doGet(e) {
+  const action = e.parameter.action;
+
+  if (action === "createForm") {
+    const title = e.parameter.title || "Nugget's Minute of Maths";
+    const ss = SpreadsheetApp.create(title + " (Responses)");
+    const sheet = ss.getActiveSheet();
+    sheet.setName("Form Responses 1");
+    
+    setupHeaders(sheet);
+
+    return ContentService.createTextOutput(JSON.stringify({
+      sheetId: ss.getId(),
+      sheetUrl: ss.getUrl()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+
+  if (action === "fetchSheetInfo") {
+    try {
+      const input = e.parameter.sheetInput;
+      let ss;
+      if (input.indexOf("http") === 0) {
+        ss = SpreadsheetApp.openByUrl(input);
+      } else {
+        ss = SpreadsheetApp.openById(input);
+      }
+      const sheet = ss.getActiveSheet();
+      
+      if (sheet.getLastRow() === 0) {
+        setupHeaders(sheet);
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({
+        sheetId: ss.getId(),
+        sheetUrl: ss.getUrl()
+      })).setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({
+        error: "Could not open spreadsheet. Ensure the link/ID is correct and accessible."
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
+  if (action === "submitData") {
+    try {
+      const sheetId = e.parameter.sheetId;
+      const rawData = JSON.parse(e.parameter.data);
+      const ss = SpreadsheetApp.openById(sheetId);
+      const sheet = ss.getActiveSheet();
+      
+      sheet.appendRow([
+        new Date(),
+        rawData.studentName || "Anonymous",
+        rawData.activityCode || "",
+        "'" + (rawData.operations || ""),
+        rawData.maxInput || "",
+        rawData.missingSymbol || "",
+        rawData.directionMode || "",
+        rawData.theme || "",
+        rawData.buttonTheme || "",
+        rawData.showNugget || "",
+        rawData.correctAnswers || 0,
+        rawData.totalAttempts || 0,
+        rawData.accuracy || 0,
+        rawData.avgSec || 0
+      ]);
+
+      return ContentService.createTextOutput("Success")
+        .setMimeType(ContentService.MimeType.TEXT);
+    } catch (err) {
+      return ContentService.createTextOutput("Error: " + err.toString())
+        .setMimeType(ContentService.MimeType.TEXT);
+    }
+  }
+}
+
+function setupHeaders(sheet) {
+  const headers = [
+    "Timestamp", "Student Name", "Activity Code", "Operations", 
+    "Max Input", "Missing Symbol", "Direction Mode", "Theme", 
+    "Button Theme", "Show Nugget", "Correct Answers", 
+    "Total Attempts", "Accuracy (%)", "Avg Sec/Correct"
+  ];
+  sheet.appendRow(headers);
+  sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold");
+}`;
+
 function mulberry32(a) {
   return function() {
     let t = a += 0x6D2B79F5;
@@ -481,7 +503,6 @@ function stringToSeed(str) {
   return hash;
 }
 
-// State variables
 let config = {};
 let currentSeed = "";
 let rngInstance = null;
@@ -489,41 +510,26 @@ let timerInterval = null;
 let timeLeft = 60;
 let isWaitingToStart = false;
 let isGameActive = false;
+let playerName = "Anonymous";
+let isSoloMode = false;
+let generatedDirectLink = "";
 
-// Performance Tracking
 let totalAttempts = 0;
 let correctCount = 0;
 let currentProblem = null;
-let lastResultData = { headers: [], data: [] };
 
-// SVG HTML for precise letter-height box
 const BOX_SVG_HTML = `<svg class="math-box" viewBox="0 0 30 26"><rect x="1.5" y="1.5" width="27" height="23"/></svg>`;
+const nuggetPhrases = ["Awesome work!", "You're a maths whiz!", "Great job!", "Keep it up!", "Super fast!", "Nugget is proud!", "Spot on!", "Unstoppable!", "Brilliant!", "Way to go!"];
+const retryPhrases = ["Almost! Try again!", "Give it another shot!", "Not quite, try once more!", "Keep going, you can do it!"];
 
-// Nugget Phrases
-const nuggetPhrases = [
-  "Awesome work!",
-  "You're a maths whiz!",
-  "Great job!",
-  "Keep it up!",
-  "Super fast!",
-  "Nugget is proud!",
-  "Spot on!",
-  "Unstoppable!",
-  "Brilliant!",
-  "Way to go!"
-];
-
-const retryPhrases = [
-  "Almost! Try again!",
-  "Give it another shot!",
-  "Not quite, try once more!",
-  "Keep going, you can do it!"
-];
-
-// Elements
-const setupPanel = document.getElementById('setup-panel');
+const welcomePanel = document.getElementById('welcome-panel');
+const hostPanel = document.getElementById('host-panel');
+const playerPanel = document.getElementById('player-panel');
+const soloPanel = document.getElementById('solo-panel');
 const gameContainer = document.getElementById('game-container');
 const statsPanel = document.getElementById('stats-panel');
+const scriptUrlInput = document.getElementById('script-url');
+const welcomeNuggetImg = document.getElementById('welcome-nugget-img');
 const themeSelect = document.getElementById('theme-mode');
 const btnColourSelect = document.getElementById('btn-colour');
 const startPrompt = document.getElementById('start-prompt');
@@ -535,31 +541,128 @@ const liveScoreDisplay = document.getElementById('live-score-display');
 const nuggetContainer = document.getElementById('nugget-container');
 const nuggetImg = document.getElementById('nugget-img');
 const speechBubble = document.getElementById('speech-bubble');
+const guideModal = document.getElementById('guide-modal');
 
-// Update image source according to theme
-function updateNuggetThemeImage(theme) {
+const radioSheetNew = document.getElementById('radio-sheet-new');
+const radioSheetExisting = document.getElementById('radio-sheet-existing');
+const existingSheetContainer = document.getElementById('existing-sheet-container');
+const existingSheetInput = document.getElementById('existing-sheet-input');
+
+// Restore saved settings on load
+if (localStorage.getItem('nugget_script_url')) {
+  scriptUrlInput.value = localStorage.getItem('nugget_script_url');
+}
+
+const savedSheetIdentifier = localStorage.getItem('nugget_last_sheet_id');
+if (savedSheetIdentifier) {
+  radioSheetExisting.checked = true;
+  radioSheetNew.checked = false;
+  existingSheetContainer.classList.remove('hidden');
+  existingSheetInput.value = savedSheetIdentifier;
+}
+
+radioSheetNew.addEventListener('change', () => existingSheetContainer.classList.add('hidden'));
+radioSheetExisting.addEventListener('change', () => existingSheetContainer.classList.remove('hidden'));
+
+function applyTheme(theme, btnColour) {
+  document.body.classList.toggle('light-mode', theme === 'light');
+  welcomeNuggetImg.src = theme === 'dark' ? 'Nugget_black_bg.png' : 'Nugget.png';
   nuggetImg.src = theme === 'dark' ? 'Nugget_black_bg.png' : 'Nugget.png';
+  if (btnColour) {
+    document.documentElement.style.setProperty('--primary-btn', btnColour);
+    document.documentElement.style.setProperty('--primary-btn-hover', btnColour + 'cc');
+  }
 }
 
-// Apply visual styles
-themeSelect.addEventListener('change', (e) => {
-  const mode = e.target.value;
-  document.body.classList.toggle('light-mode', mode === 'light');
-  updateNuggetThemeImage(mode);
+themeSelect.addEventListener('change', (e) => applyTheme(e.target.value, btnColourSelect.value));
+btnColourSelect.addEventListener('change', (e) => applyTheme(themeSelect.value, e.target.value));
+
+document.getElementById('solo-theme-mode').addEventListener('change', (e) => applyTheme(e.target.value, document.getElementById('solo-btn-colour').value));
+document.getElementById('solo-btn-colour').addEventListener('change', (e) => applyTheme(document.getElementById('solo-theme-mode').value, e.target.value));
+
+document.getElementById('btn-show-guide').addEventListener('click', () => guideModal.classList.remove('hidden'));
+document.getElementById('btn-close-guide').addEventListener('click', () => guideModal.classList.add('hidden'));
+
+document.getElementById('btn-copy-apps-script').addEventListener('click', (e) => {
+  navigator.clipboard.writeText(APPS_SCRIPT_SOURCE).then(() => {
+    e.target.textContent = "✅ Copied to Clipboard!";
+    setTimeout(() => e.target.textContent = "📋 1. Click to Copy Apps Script Code", 2500);
+  });
 });
 
-btnColourSelect.addEventListener('change', (e) => {
-  applyButtonColour(e.target.value);
+document.querySelectorAll('.btn-go-welcome').forEach(btn => {
+  btn.addEventListener('click', () => {
+    hostPanel.classList.add('hidden');
+    playerPanel.classList.add('hidden');
+    soloPanel.classList.add('hidden');
+    gameContainer.classList.add('hidden');
+    statsPanel.classList.add('hidden');
+    welcomePanel.classList.remove('hidden');
+  });
 });
 
-function applyButtonColour(colourHex) {
-  document.documentElement.style.setProperty('--primary-btn', colourHex);
-  document.documentElement.style.setProperty('--primary-btn-hover', colourHex + 'cc');
-}
+document.getElementById('btn-select-solo').addEventListener('click', () => {
+  welcomePanel.classList.add('hidden');
+  soloPanel.classList.remove('hidden');
+});
 
-// Read settings and transition to Ready screen
-document.getElementById('btn-start').addEventListener('click', (e) => {
-  e.stopPropagation();
+document.getElementById('btn-select-host').addEventListener('click', () => {
+  welcomePanel.classList.add('hidden');
+  hostPanel.classList.remove('hidden');
+});
+
+document.getElementById('btn-solo-start').addEventListener('click', () => {
+  const ops = [];
+  if (document.getElementById('solo-op-add').checked) ops.push('+');
+  if (document.getElementById('solo-op-sub').checked) ops.push('-');
+  if (document.getElementById('solo-op-mul').checked) ops.push('×');
+  if (document.getElementById('solo-op-div').checked) ops.push('÷');
+
+  if (ops.length === 0) {
+    alert("Please select at least one operation.");
+    return;
+  }
+
+  isSoloMode = true;
+  playerName = "Solo Player";
+
+  config = {
+    seed: Math.random().toString(36).substring(2, 9),
+    ops: ops,
+    maxInput: parseInt(document.getElementById('solo-max-input').value, 10),
+    missingSymbol: document.getElementById('solo-missing-symbol').value,
+    direction: document.getElementById('solo-problem-direction').value,
+    themeMode: document.getElementById('solo-theme-mode').value,
+    btnColour: document.getElementById('solo-btn-colour').value,
+    showTimer: document.getElementById('solo-show-timer').checked,
+    showStats: document.getElementById('solo-show-stats').checked,
+    showNugget: document.getElementById('solo-show-nugget').checked,
+    scriptUrl: null,
+    sheetId: null
+  };
+
+  applyTheme(config.themeMode, config.btnColour);
+  liveTimerDisplay.style.visibility = config.showTimer ? 'visible' : 'hidden';
+  liveScoreDisplay.style.visibility = config.showStats ? 'visible' : 'hidden';
+
+  if (config.showNugget) {
+    nuggetContainer.classList.remove('hidden');
+    speechBubble.textContent = "Ready? Let's solve some maths!";
+  } else {
+    nuggetContainer.classList.add('hidden');
+  }
+
+  soloPanel.classList.add('hidden');
+  prepareReadyState();
+});
+
+document.getElementById('btn-generate-code').addEventListener('click', async () => {
+  const scriptUrl = scriptUrlInput.value.trim();
+  if (!scriptUrl) {
+    alert("Please enter your Google Apps Script Web App URL first.");
+    return;
+  }
+  localStorage.setItem('nugget_script_url', scriptUrl);
 
   const ops = [];
   if (document.getElementById('op-add').checked) ops.push('+');
@@ -568,33 +671,83 @@ document.getElementById('btn-start').addEventListener('click', (e) => {
   if (document.getElementById('op-div').checked) ops.push('÷');
 
   if (ops.length === 0) {
-    alert("Please select at least one maths operation.");
+    alert("Please select at least one operation.");
     return;
   }
 
-  const userMax = parseInt(document.getElementById('max-input').value, 10);
-  if (isNaN(userMax) || userMax < 1) {
-    alert("Please enter a valid maximum input value (1 or greater).");
+  const useExisting = radioSheetExisting.checked;
+  const existingInput = existingSheetInput.value.trim();
+
+  if (useExisting && !existingInput) {
+    alert("Please paste the URL or ID of your existing Google Sheet.");
     return;
   }
 
-  config = {
-    ops: ops,
-    maxInput: userMax,
-    missingSymbol: document.getElementById('missing-symbol').value,
-    direction: document.getElementById('problem-direction').value,
-    themeMode: themeSelect.value,
-    btnColour: btnColourSelect.value,
-    showTimer: document.getElementById('show-timer').checked,
-    showStats: document.getElementById('show-stats').checked,
-    showNugget: document.getElementById('show-nugget').checked,
-    userSeed: document.getElementById('custom-seed').value.trim()
-  };
+  const btnGen = document.getElementById('btn-generate-code');
+  btnGen.disabled = true;
+  btnGen.textContent = useExisting ? "Connecting Google Sheet..." : "Creating Google Sheet...";
 
-  document.body.classList.toggle('light-mode', config.themeMode === 'light');
-  applyButtonColour(config.btnColour);
-  updateNuggetThemeImage(config.themeMode);
+  try {
+    let targetEndpoint = useExisting
+      ? `${scriptUrl}?action=fetchSheetInfo&sheetInput=${encodeURIComponent(existingInput)}`
+      : `${scriptUrl}?action=createForm&title=${encodeURIComponent("Nugget Maths Activity")}`;
 
+    const response = await fetch(targetEndpoint);
+    const backendData = await response.json();
+
+    if (backendData.error) {
+      alert(backendData.error);
+      return;
+    }
+
+    const usedSheet = useExisting ? existingInput : backendData.sheetId;
+    localStorage.setItem('nugget_last_sheet_id', usedSheet);
+
+    const activityConfig = {
+      seed: Math.random().toString(36).substring(2, 9),
+      ops: ops,
+      maxInput: parseInt(document.getElementById('max-input').value, 10),
+      missingSymbol: document.getElementById('missing-symbol').value,
+      direction: document.getElementById('problem-direction').value,
+      themeMode: themeSelect.value,
+      btnColour: btnColourSelect.value,
+      btnColourName: btnColourSelect.options[btnColourSelect.selectedIndex].text,
+      showTimer: document.getElementById('show-timer').checked,
+      showStats: document.getElementById('show-stats').checked,
+      showNugget: document.getElementById('show-nugget').checked,
+      scriptUrl: scriptUrl,
+      sheetId: backendData.sheetId
+    };
+
+    const encodedCode = "NUGGET-" + btoa(JSON.stringify(activityConfig));
+    const baseUrl = window.location.href.split('?')[0];
+    generatedDirectLink = `${baseUrl}?code=${encodeURIComponent(encodedCode)}`;
+
+    document.getElementById('sheet-link').href = backendData.sheetUrl;
+    document.getElementById('host-results-area').classList.remove('hidden');
+  } catch (err) {
+    alert("Error communicating with Google Apps Script. Check your URL and Web App permissions.");
+    console.error(err);
+  } finally {
+    btnGen.disabled = false;
+    btnGen.textContent = "Create Activity & Direct Link";
+  }
+});
+
+document.getElementById('btn-copy-link').addEventListener('click', (e) => {
+  navigator.clipboard.writeText(generatedDirectLink).then(() => {
+    e.target.textContent = "✅ Link Copied!";
+    setTimeout(() => e.target.textContent = "🔗 Copy Direct Join Link", 2000);
+  });
+});
+
+document.getElementById('btn-player-start').addEventListener('click', () => {
+  const nameVal = document.getElementById('player-name').value.trim();
+
+  isSoloMode = false;
+  playerName = nameVal !== "" ? nameVal : "Anonymous";
+
+  applyTheme(config.themeMode, config.btnColour);
   liveTimerDisplay.style.visibility = config.showTimer ? 'visible' : 'hidden';
   liveScoreDisplay.style.visibility = config.showStats ? 'visible' : 'hidden';
 
@@ -609,11 +762,11 @@ document.getElementById('btn-start').addEventListener('click', (e) => {
 });
 
 function prepareReadyState() {
-  setupPanel.classList.add('hidden');
+  playerPanel.classList.add('hidden');
+  soloPanel.classList.add('hidden');
   statsPanel.classList.add('hidden');
   gameContainer.classList.remove('hidden');
 
-  // Hide question and show click prompt
   startPrompt.classList.remove('hidden');
   problemDisplay.classList.add('hidden');
   optionsGrid.classList.add('hidden');
@@ -621,14 +774,12 @@ function prepareReadyState() {
   liveTimerDisplay.textContent = "Time: 60s";
   liveScoreDisplay.textContent = "Score: 0 (100%)";
 
-  // Tiny delay prevents immediate click propagation on button submit
   setTimeout(() => {
     isWaitingToStart = true;
     isGameActive = false;
   }, 100);
 }
 
-// User Action Trigger to Start Timer & Game
 function triggerGameStart() {
   if (!isWaitingToStart) return;
 
@@ -638,10 +789,9 @@ function triggerGameStart() {
   correctCount = 0;
   timeLeft = 60;
 
-  currentSeed = config.userSeed !== "" ? config.userSeed : Math.random().toString(36).substring(2, 9);
-  rngInstance = mulberry32(stringToSeed(currentSeed));
+  currentSeed = isSoloMode ? Math.random().toString(36).substring(2, 9) : config.seed;
+  rngInstance = isSoloMode ? Math.random : mulberry32(stringToSeed(currentSeed));
 
-  // Hide ready prompt, display problem card
   startPrompt.classList.add('hidden');
   problemDisplay.classList.remove('hidden');
   optionsGrid.classList.remove('hidden');
@@ -653,33 +803,22 @@ function triggerGameStart() {
   timerInterval = setInterval(() => {
     timeLeft--;
     liveTimerDisplay.textContent = `Time: ${timeLeft}s`;
-
-    if (timeLeft <= 0) {
-      endGame();
-    }
+    if (timeLeft <= 0) endGame();
   }, 1000);
 }
 
-// Global click & keydown listeners for starting
-window.addEventListener('click', () => {
-  if (isWaitingToStart) {
-    triggerGameStart();
-  }
-});
-
-window.addEventListener('keydown', () => {
-  if (isWaitingToStart) {
-    triggerGameStart();
-  }
-});
+window.addEventListener('click', () => { if (isWaitingToStart) triggerGameStart(); });
+window.addEventListener('keydown', () => { if (isWaitingToStart) triggerGameStart(); });
 
 function getRandomInt(min, max) {
-  return Math.floor(rngInstance() * (max - min + 1)) + min;
+  const randomVal = isSoloMode ? rngInstance() : rngInstance();
+  return Math.floor(randomVal * (max - min + 1)) + min;
 }
 
 function generateProblem() {
-  const op = config.ops[Math.floor(rngInstance() * config.ops.length)];
-  const max = config.maxInput;
+  const randomVal = isSoloMode ? rngInstance() : rngInstance();
+  const op = config.ops[Math.floor(randomVal * config.ops.length)];
+  const max = Math.max(2, config.maxInput);
   const placeholderSymbol = config.missingSymbol === 'box' ? BOX_SVG_HTML : '?';
   let a, b, targetAnswer, resultVal, textDisplay;
 
@@ -688,66 +827,51 @@ function generateProblem() {
     b = getRandomInt(1, max);
     resultVal = a + b;
   } else if (op === '-') {
-    a = getRandomInt(1, max);
-    b = getRandomInt(1, max);
-    const num1 = Math.max(a, b);
-    const num2 = Math.min(a, b);
-    a = num1;
-    b = num2;
+    a = getRandomInt(2, max);
+    b = getRandomInt(1, a - 1);
     resultVal = a - b;
   } else if (op === '×') {
     a = getRandomInt(1, max);
     b = getRandomInt(1, max);
     resultVal = a * b;
   } else if (op === '÷') {
-    b = getRandomInt(1, max); 
-    let quotient = getRandomInt(1, max); 
-    a = b * quotient; 
-    resultVal = quotient;
+    b = getRandomInt(1, max);
+    let q = getRandomInt(1, max);
+    a = b * q;
+    resultVal = q;
   }
 
-  // Determine direction based on config
-  let isBackward = false;
-  if (config.direction === 'backward') {
-    isBackward = true;
-  } else if (config.direction === 'mixed') {
-    isBackward = rngInstance() > 0.5;
-  }
+  const randomValDir = isSoloMode ? rngInstance() : rngInstance();
+  let isBackward = config.direction === 'backward' || (config.direction === 'mixed' && randomValDir > 0.5);
 
   if (!isBackward) {
-    // Forward: e.g. 5 + 3 = ☐
     textDisplay = `${a} ${op} ${b} = ${placeholderSymbol}`;
     targetAnswer = resultVal;
   } else {
-    // Backward: missing first number or missing second number randomly
-    const missingFirst = rngInstance() > 0.5;
-    if (missingFirst) {
-      // e.g. ☐ + 3 = 8
+    const randomValSide = isSoloMode ? rngInstance() : rngInstance();
+    if (randomValSide > 0.5) {
       textDisplay = `${placeholderSymbol} ${op} ${b} = ${resultVal}`;
       targetAnswer = a;
     } else {
-      // e.g. 5 + ☐ = 8
       textDisplay = `${a} ${op} ${placeholderSymbol} = ${resultVal}`;
       targetAnswer = b;
     }
   }
 
-  // Generate 3 unique distractor choices
   const options = [targetAnswer];
+  let delta = 1;
   while (options.length < 4) {
-    let offset = getRandomInt(1, 4) * (rngInstance() > 0.5 ? 1 : -1);
-    let distractor = targetAnswer + offset;
-
-    if (distractor < 0) distractor = Math.abs(distractor) + getRandomInt(1, 3);
-    
-    if (!options.includes(distractor)) {
-      options.push(distractor);
+    const randomValOpt = isSoloMode ? rngInstance() : rngInstance();
+    let candidate = targetAnswer + (delta * (randomValOpt > 0.5 ? 1 : -1));
+    if (candidate >= 0 && !options.includes(candidate)) {
+      options.push(candidate);
     }
+    delta++;
   }
 
-  // Shuffle options array using seeded PRNG
   for (let i = options.length - 1; i > 0; i--) {
-    const j = Math.floor(rngInstance() * (i + 1));
+    const randomValShuf = isSoloMode ? rngInstance() : rngInstance();
+    const j = Math.floor(randomValShuf * (i + 1));
     [options[i], options[j]] = [options[j], options[i]];
   }
 
@@ -757,34 +881,22 @@ function generateProblem() {
 function nextProblem() {
   currentProblem = generateProblem();
   problemDisplay.innerHTML = currentProblem.text;
-  
-  optionButtons.forEach((btn, idx) => {
-    btn.textContent = currentProblem.choices[idx];
-  });
+  optionButtons.forEach((btn, idx) => btn.textContent = currentProblem.choices[idx]);
 }
 
-// Option Click Handler
 optionButtons.forEach(btn => {
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
     if (!isGameActive) return;
 
-    const selectedVal = parseInt(e.target.textContent, 10);
     totalAttempts++;
-
-    if (selectedVal === currentProblem.answer) {
+    if (parseInt(e.target.textContent, 10) === currentProblem.answer) {
       correctCount++;
-      if (config.showNugget) {
-        const randomPhrase = nuggetPhrases[Math.floor(rngInstance() * nuggetPhrases.length)];
-        speechBubble.textContent = randomPhrase;
-      }
+      if (config.showNugget) speechBubble.textContent = nuggetPhrases[Math.floor(Math.random() * nuggetPhrases.length)];
       updateLiveStats();
       nextProblem();
     } else {
-      if (config.showNugget) {
-        const randomRetry = retryPhrases[Math.floor(Math.random() * retryPhrases.length)];
-        speechBubble.textContent = randomRetry;
-      }
+      if (config.showNugget) speechBubble.textContent = retryPhrases[Math.floor(Math.random() * retryPhrases.length)];
       updateLiveStats();
     }
   });
@@ -808,88 +920,56 @@ function endGame() {
   document.getElementById('stat-accuracy').textContent = `${accuracy}%`;
   document.getElementById('stat-avg-time').textContent = `${avgTime}s`;
 
-  // Escape operation list with a single quote so spreadsheets read it as plain text
-  const safeOpsString = `'${config.ops.join(" ")}`;
-
-  // Prepare Clipboard TSV Export Data
-  const headers = [
-    "Timestamp",
-    "Seed",
-    "Operations",
-    "Max Input",
-    "Missing Symbol",
-    "Direction Mode",
-    "Theme",
-    "Show Nugget",
-    "Correct Answers",
-    "Total Attempts",
-    "Accuracy (%)",
-    "Avg Sec/Correct"
-  ];
-
-  const dataRow = [
-    new Date().toISOString(),
-    currentSeed,
-    safeOpsString,
-    config.maxInput,
-    config.missingSymbol,
-    config.direction,
-    config.themeMode,
-    config.showNugget ? "Yes" : "No",
-    correctCount,
-    totalAttempts,
-    accuracy,
-    avgTime
-  ];
-
-  lastResultData = { headers: headers, data: dataRow };
-
   gameContainer.classList.add('hidden');
   statsPanel.classList.remove('hidden');
+
+  if (!isSoloMode && config.sheetId) {
+    submitResultsToSpreadsheet(accuracy, avgTime);
+  }
 }
 
-// Clipboard Helpers
-function copyToClipboard(text, buttonElement) {
-  const originalText = buttonElement.dataset.originalText || buttonElement.textContent;
-  buttonElement.dataset.originalText = originalText;
+function submitResultsToSpreadsheet(accuracy, avgTime) {
+  const payload = {
+    studentName: playerName,
+    activityCode: currentSeed,
+    operations: config.ops.join(" "),
+    maxInput: config.maxInput,
+    missingSymbol: config.missingSymbol,
+    directionMode: config.direction,
+    theme: config.themeMode,
+    buttonTheme: config.btnColourName,
+    showNugget: config.showNugget ? "Yes" : "No",
+    correctAnswers: correctCount,
+    totalAttempts: totalAttempts,
+    accuracy: accuracy,
+    avgSec: avgTime
+  };
 
-  navigator.clipboard.writeText(text).then(() => {
-    buttonElement.textContent = "Copied!";
-    buttonElement.classList.add('copied');
+  const targetUrl = `${config.scriptUrl}?action=submitData&sheetId=${encodeURIComponent(config.sheetId)}&data=${encodeURIComponent(JSON.stringify(payload))}`;
 
-    setTimeout(() => {
-      buttonElement.textContent = originalText;
-      buttonElement.classList.remove('copied');
-    }, 2000);
-  }).catch(() => {
-    buttonElement.textContent = "Failed!";
-    setTimeout(() => {
-      buttonElement.textContent = originalText;
-    }, 2000);
-  });
+  fetch(targetUrl).catch(err => console.error("Silent save error:", err));
 }
-
-document.getElementById('btn-copy-data').addEventListener('click', (e) => {
-  e.stopPropagation();
-  copyToClipboard(lastResultData.data.join('\t'), e.target);
-});
-
-document.getElementById('btn-copy-headers').addEventListener('click', (e) => {
-  e.stopPropagation();
-  const combined = lastResultData.headers.join('\t') + '\n' + lastResultData.data.join('\t');
-  copyToClipboard(combined, e.target);
-});
 
 document.getElementById('btn-restart').addEventListener('click', (e) => {
   e.stopPropagation();
   prepareReadyState();
 });
 
-document.getElementById('btn-change-settings').addEventListener('click', (e) => {
-  e.stopPropagation();
-  statsPanel.classList.add('hidden');
-  gameContainer.classList.add('hidden');
-  setupPanel.classList.remove('hidden');
+// Auto-detect join link parameter on load
+window.addEventListener('load', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const codeParam = urlParams.get('code');
+  
+  if (codeParam) {
+    try {
+      const jsonStr = atob(codeParam.replace("NUGGET-", ""));
+      config = JSON.parse(jsonStr);
+      welcomePanel.classList.add('hidden');
+      playerPanel.classList.remove('hidden');
+    } catch (err) {
+      console.error("Could not parse direct link data", err);
+    }
+  }
 });
 </script>
 </body>
